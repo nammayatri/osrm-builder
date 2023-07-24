@@ -18,14 +18,5 @@ pipeline {
                 dockerPush "dockerImage", "ghcr.io"
             }
         }
-        stage ('Cleanup') {
-            steps {
-                sh """
-                    set -x
-                    nix-store --query --referrers ${env.FLAKE_OUTPUTS} | xargs nix store delete
-                    nix store delete ${env.FLAKE_OUTPUTS}
-                """
-            }
-        }
     }
 }
