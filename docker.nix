@@ -1,10 +1,6 @@
-{ self, ... }:
-
 let
   imageName = "ghcr.io/nammayatri/osrm-builder";
-  # self.rev will be non-null only when the working tree is clean
-  # This is equivalent to `git rev-parse --short HEAD`
-  imageTag = builtins.substring 0 6 (self.rev or "dev");
+  imageTag = builtins.readFile ./southern-zone-latest.osm.pbf.hash;
 in
 {
     perSystem = { self', pkgs, lib, ... }: {
