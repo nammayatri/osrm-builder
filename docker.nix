@@ -18,7 +18,7 @@ in
             paths = with pkgs; [
               cacert
               coreutils
-              bash
+              bashInteractive
               self'.packages.osrm-data
             ];
             name = "osrm-data-img";
