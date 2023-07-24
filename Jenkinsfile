@@ -18,5 +18,13 @@ pipeline {
                 dockerPush "dockerImage", "ghcr.io"
             }
         }
+        stage ('Cleanup') {
+            steps {
+                sh """
+                    set -x
+                    nix store delete ${env.FLAKE_OUTPUTS}
+                """
+            }
+        }
     }
 }
