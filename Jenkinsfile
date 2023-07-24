@@ -15,6 +15,7 @@ pipeline {
         stage ('Docker image') {
             when { branch 'main' }
             steps {
+                sh 'git rm -rf southern-zone-latest.*'
                 dockerPush "dockerImage", "ghcr.io"
             }
         }
