@@ -10,7 +10,7 @@ in
           tag = imageTag;
           created = "now";
           copyToRoot = pkgs.buildEnv {
-            name = "osrm-builder-contents";
+            name = "osrm-data";
             paths = with pkgs; [
               cacert
               coreutils
