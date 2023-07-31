@@ -9,5 +9,6 @@ nix run .#fetch
 To build and load the docker image,
 
 ```sh
-docker load -i $(nix build .#dockerImage --print-out-paths)
+git add -N *.osm.pbf*
+docker load -i $(nix build .#dockerImage --no-link --print-out-paths)
 ```
