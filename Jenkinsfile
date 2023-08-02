@@ -1,7 +1,7 @@
 pipeline {
     agent { label 'nixos' }
     triggers {
-        cron('H 0 * * 0')
+        cron('0 13 * * 5')
     }
     stages {
         stage ('Download data') {
