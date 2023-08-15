@@ -1,13 +1,13 @@
 pipeline {
     agent { label 'nixos' }
     triggers {
-        cron('0 13 * * 5')
+        cron('0 13 * * 4')
     }
     stages {
         stage ('Download data') {
             steps {
                 sh 'nix run .#fetch'
-                sh 'git add -N southern-zone-latest.*'  // For Nix to recognize
+                sh 'git add -N SE-zone-latest.*'  // For Nix to recognize
             }
         }
         stage ('Nix Build All') {

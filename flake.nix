@@ -18,11 +18,16 @@
         apps.fetch.program = pkgs.writeShellApplication {
           name = "osrm-fetch";
           text = ''
-            NAME=southern-zone-latest
+            REGION1=southern-zone-latest
+            REGION2=eastern-zone-latest
+            MERGED=SE-zone-latest
             set -x
-            rm -f $NAME.osm.pbf*
-            ${lib.getExe pkgs.wget} http://download.geofabrik.de/asia/india/$NAME.osm.pbf
-            nix hash file $NAME.osm.pbf  --base32 > $NAME.osm.pbf.hash
+            rm -f $REGION1.osm.pbf*
+            rm -f $REGION2.osm.pbf*
+            ${lib.getExe pkgs.wget} http://download.geofabrik.de/asia/india/$REGION1.osm.pbf
+            ${lib.getExe pkgs.wget} http://download.geofabrik.de/asia/india/$REGION2.osm.pbf
+            ${pkgs.osmium-tool}/bin/osmium merge -o $MERGED.osm.pbf $REGION1.osm.pbf $REGION2.osm.pbf
+            nix hash file $MERGED.osm.pbf  --base32 > $MERGED.osm.pbf.hash
           '';
         };
       };
