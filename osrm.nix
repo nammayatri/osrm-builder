@@ -1,8 +1,8 @@
 _:
 
 let
-  openStreetDataFileName = "southern-zone-latest";
-  openStreetDataFile = ./southern-zone-latest.osm.pbf;  # Run `nix run .#fetch` to download this file.
+  openStreetDataFileName = "SE-zone-latest";
+  openStreetDataFile = ./SE-zone-latest.osm.pbf;  # Run `nix run .#fetch` to download this file.
 in
 {
   perSystem = { pkgs, lib, ... }: {
