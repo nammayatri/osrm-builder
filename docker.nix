@@ -16,6 +16,8 @@ in
               coreutils
               bashInteractive
               self'.packages.osrm-data
+              self'.packages.osrm-server
+              osrm-backend
             ];
             /* pathsToLink = [
               "/bin"
