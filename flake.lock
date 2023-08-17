@@ -1,5 +1,17 @@
 {
   "nodes": {
+    "eastern-zone-latest": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-kHnD1gROOXUIexRXsV1EcH6GOAQn0Z3uAMj5ncmUrug=",
+        "type": "file",
+        "url": "https://download.geofabrik.de/asia/india/eastern-zone-latest.osm.pbf"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://download.geofabrik.de/asia/india/eastern-zone-latest.osm.pbf"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": "nixpkgs-lib"
@@ -54,9 +66,23 @@
     },
     "root": {
       "inputs": {
+        "eastern-zone-latest": "eastern-zone-latest",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs",
+        "southern-zone-latest": "southern-zone-latest",
         "systems": "systems"
+      }
+    },
+    "southern-zone-latest": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-59KOFioYb7tiuePP57g6hvNRKj7NjHJViEuLvyr5vF4=",
+        "type": "file",
+        "url": "https://download.geofabrik.de/asia/india/southern-zone-latest.osm.pbf"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://download.geofabrik.de/asia/india/southern-zone-latest.osm.pbf"
       }
     },
     "systems": {

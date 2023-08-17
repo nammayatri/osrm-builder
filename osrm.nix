@@ -1,8 +1,7 @@
-_:
+{ inputs, ... }:
 
 let
   openStreetDataFileName = "SE-zone-latest";
-  openStreetDataFile = ./SE-zone-latest.osm.pbf;  # Run `nix run .#fetch` to download this file.
 in
 {
   perSystem = { pkgs, lib, ... }: {
@@ -13,7 +12,9 @@ in
             { buildInputs = [ pkgs.osrm-backend ]; }
             ''
               mkdir $out && cd $out
-              cp ${openStreetDataFile} ${openStreetDataFileName}.osm.pbf
+              ln -s ${inputs.southern-zone-latest} a.osm.pbf
+              ln -s ${inputs.eastern-zone-latest} b.osm.pbf
+              ${pkgs.osmium-tool}/bin/osmium merge -o ${openStreetDataFileName}.osm.pbf a.osm.pbf b.osm.pbf
               osrm-extract -p ${pkgs.osrm-backend}/share/osrm/profiles/car.lua ${openStreetDataFileName}.osm.pbf
               osrm-partition ${openStreetDataFileName}.osrm
               osrm-customize ${openStreetDataFileName}.osrm
