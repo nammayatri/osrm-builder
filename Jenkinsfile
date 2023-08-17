@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ('Nix Build') {
             steps {
-                nixCI
+                nixCI()
             }
         }
         stage ('Docker image') {
