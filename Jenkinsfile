@@ -1,18 +1,9 @@
 pipeline {
     agent { label 'nixos' }
-    triggers {
-        cron('0 13 * * 4')
-    }
     stages {
-        stage ('Download data') {
+        stage ('Nix Build') {
             steps {
-                sh 'nix run .#fetch'
-                sh 'git add -N SE-zone-latest.*'  // For Nix to recognize
-            }
-        }
-        stage ('Nix Build All') {
-            steps {
-                nixBuildAll system: env.SYSTEM
+                nixCI()
             }
         }
         stage ('Docker image') {
