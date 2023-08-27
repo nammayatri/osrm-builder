@@ -3,7 +3,7 @@
     "eastern-zone-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-6uH7HRZ2OhSTSWO7UjHUQgnBvrdHrlSl2uAN+N+y8ks=",
+        "narHash": "sha256-sH7pCpv0+e3LnfIQp5uJYFbvrJ+WYKTyBOFdrnu3/zI=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india/eastern-zone-latest.osm.pbf"
       },
@@ -76,7 +76,7 @@
     "southern-zone-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-Rd0wRupLXjsBG1no4YePblGsM9XG2Wyv+Bfvp8O36TE=",
+        "narHash": "sha256-PdlAxj4rITtw7kJSvGQwH+KfIrWeAJDXs+ZESrf3OYM=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india/southern-zone-latest.osm.pbf"
       },
