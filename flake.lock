@@ -3,7 +3,7 @@
     "eastern-zone-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-cDFU8CO/0/GCdyDUAy1Jcm6NPMIb/4qFLpVFzE7JaPI=",
+        "narHash": "sha256-t0I+Rs2lh917O/T/U/6l11C0lCVf4tF54C3y3oS17bs=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india/eastern-zone-latest.osm.pbf"
       },
@@ -32,11 +32,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1694948089,
-        "narHash": "sha256-d2B282GmQ9o8klc22/Rbbbj6r99EnELQpOQjWMyv0rU=",
+        "lastModified": 1695318763,
+        "narHash": "sha256-FHVPDRP2AfvsxAdc+AsgFJevMz5VBmnZglFUMlxBkcY=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "5148520bfab61f99fd25fb9ff7bfbb50dad3c9db",
+        "rev": "e12483116b3b51a185a33a272bf351e357ba9a99",
         "type": "github"
       },
       "original": {
@@ -76,7 +76,7 @@
     "southern-zone-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-0ZEhLk6zmMNCyc8byIGyH8ZqUtb0yyfQ97f1XibZZ3Q=",
+        "narHash": "sha256-skWTcyYgQcHGRoOEIKq0pdS9DZbe3vTebDjEdiw+zOY=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india/southern-zone-latest.osm.pbf"
       },
