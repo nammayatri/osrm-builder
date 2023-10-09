@@ -8,15 +8,11 @@ in
   perSystem = { self', pkgs, lib, ... }: {
     packages =
       rec {
-        osrm-backend = pkgs.runCommandNoCC
-          "osrm-backend-patched"
-          {}
-          ''
-          mkdir $out
-          cp -r ${pkgs.osrm-backend}/* $out/
-          chmod -R u+w $out/
-          cp ${carLuaPath} $out/share/osrm/profiles/car.lua
+        osrm-backend = pkgs.osrm-backend.overrideAttrs (oa: {
+          postInstall = (oa.postInstall or "") + ''
+            cp ${carLuaPath} $out/share/osrm/profiles/car.lua
           '';
+        });
 
         osrm-data =
           pkgs.runCommandNoCC "osrm-data"
