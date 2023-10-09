@@ -34,11 +34,11 @@ in
 
         osrm-server = pkgs.writeShellApplication {
           name = "osrm-server";
-          runtimeInputs = [ osrm-data ];
+          runtimeInputs = [ pkgs.osrm-backend ];
           text = ''
             set -x
             osrm-routed --algorithm mld \
-               $out/${openStreetDataFileName}.osrm
+               ${osrm-data}/${openStreetDataFileName}.osrm
           '';
         };
       };
