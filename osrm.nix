@@ -8,9 +8,14 @@ in
   perSystem = { self', pkgs, lib, ... }: {
     packages =
       rec {
+        # Patch osrm-backend to use our own car.lua file
         osrm-backend = pkgs.osrm-backend.overrideAttrs (oa: {
-          postInstall = (oa.postInstall or "") + ''
-            cp ${carLuaPath} $out/share/osrm/profiles/car.lua
+          # TODO: Use `patches` to directly patch the car.lua file.
+          # Or, use a fork of osrm-backend, and point to it.
+          src = pkgs.runCommandNoCC "osrm-backend-patched-src" {} ''
+            cp -r ${oa.src} $out
+            chmod -R u+w $out
+            cp ${carLuaPath} $out/profiles/car.lua
           '';
         });
 
