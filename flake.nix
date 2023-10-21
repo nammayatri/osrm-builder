@@ -5,9 +5,9 @@
     systems.url = "github:nix-systems/default";
 
     # data files
-    southern-zone-latest.url = "https://download.geofabrik.de/africa/sao-tome-and-principe-latest.osm.pbf";
+    southern-zone-latest.url = "https://download.geofabrik.de/asia/india/southern-zone-latest.osm.pbf";
     southern-zone-latest.flake = false;
-    eastern-zone-latest.url = "https://download.geofabrik.de/africa/seychelles-latest.osm.pbf";
+    eastern-zone-latest.url = "https://download.geofabrik.de/asia/india/eastern-zone-latest.osm.pbf";
     eastern-zone-latest.flake = false;
   };
 
