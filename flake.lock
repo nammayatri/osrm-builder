@@ -3,7 +3,7 @@
     "eastern-zone-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-Kgv3VT1p6te8KaUfNpAu1GCG06SrdqiulxEesLIWTJ4=",
+        "narHash": "sha256-UpE3ZDOZWEg8uLwAm0WcbcJrA9rlt4GvIA5EhCH78x0=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india/eastern-zone-latest.osm.pbf"
       },
@@ -17,11 +17,11 @@
         "nixpkgs-lib": "nixpkgs-lib"
       },
       "locked": {
-        "lastModified": 1696343447,
-        "narHash": "sha256-B2xAZKLkkeRFG5XcHHSXXcP7To9Xzr59KXeZiRf4vdQ=",
+        "lastModified": 1693611461,
+        "narHash": "sha256-aPODl8vAgGQ0ZYFIRisxYG5MOGSkIczvu2Cd8Gb9+1Y=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "c9afaba3dfa4085dbd2ccb38dfade5141e33d9d4",
+        "rev": "7f53fdb7bdc5bb237da7fefef12d099e4fd611ca",
         "type": "github"
       },
       "original": {
@@ -32,11 +32,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1697379843,
-        "narHash": "sha256-RcnGuJgC2K/UpTy+d32piEoBXq2M+nVFzM3ah/ZdJzg=",
+        "lastModified": 1695806987,
+        "narHash": "sha256-fX5kGs66NZIxCMcpAGIpxuftajHL8Hil1vjHmjjl118=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "12bdeb01ff9e2d3917e6a44037ed7df6e6c3df9d",
+        "rev": "f3dab3509afca932f3f4fd0908957709bb1c1f57",
         "type": "github"
       },
       "original": {
@@ -49,11 +49,11 @@
     "nixpkgs-lib": {
       "locked": {
         "dir": "lib",
-        "lastModified": 1696019113,
-        "narHash": "sha256-X3+DKYWJm93DRSdC5M6K5hLqzSya9BjibtBsuARoPco=",
+        "lastModified": 1693471703,
+        "narHash": "sha256-0l03ZBL8P1P6z8MaSDS/MvuU8E75rVxe5eE1N6gxeTo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f5892ddac112a1e9b3612c39af1b72987ee5783a",
+        "rev": "3e52e76b70d5508f3cec70b882a29199f4d1ee85",
         "type": "github"
       },
       "original": {
@@ -76,7 +76,7 @@
     "southern-zone-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-MsrUYMOBv+Cw11KcajF/UeW84w486eLD1hhSuVB5Moc=",
+        "narHash": "sha256-Swz0bTzvztp64nwKw+ejxqbZiKzhSqt9piio4xJkTMk=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india/southern-zone-latest.osm.pbf"
       },
