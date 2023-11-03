@@ -3,7 +3,7 @@
 First, fetch the latest data files:
 
 ```sh
-nix flake lock --update-input southern-zone-latest --update-input eastern-zone-latest
+nix flake lock --update-input india-latest
 ```
 
 To build and load the docker image,
