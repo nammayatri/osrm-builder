@@ -1,5 +1,9 @@
 name: Auto-merge Dependabot
-on: pull_request
+
+on:
+  pull_request:
+    branches:
+      - main
 
 permissions:
   pull-requests: write
@@ -8,9 +12,23 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login == 'github-actions[bot]'
+
     steps:
-      - uses: peter-evans/enable-pull-request-automerge@v3
+      - name: Get Pull Request Commits
+        id: get_pr_commits
+        run: |
+          PR_COMMITS=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits")
+          echo "::set-output name=commit_author::$(echo "$PR_COMMITS" | jq -r '.[0].commit.author.name')"
+        
+      - name: Print Commit Author
+        run: |
+          echo "Commit Author Value: ${{ steps.get_pr_commits.outputs.commit_author }}" 
+        
+      - name: Merge Pull Request
+        if: steps.get_pr_commits.outputs.commit_author == 'github-actions[bot]'
+        uses: peter-evans/enable-pull-request-automerge@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: merge
