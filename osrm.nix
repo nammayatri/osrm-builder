@@ -1,7 +1,7 @@
 { inputs, ... }:
 
 let
-  openStreetDataFileName = "SE-zone-latest";
+  openStreetDataFileName = "india-latest";
   carLuaPath = ./car.lua; # Adjust this path as needed
 in
 {
@@ -24,9 +24,7 @@ in
             { buildInputs = [ self'.packages.osrm-backend ]; }
             ''
               mkdir $out && cd $out
-              ln -s ${inputs.southern-zone-latest} a.osm.pbf
-              ln -s ${inputs.eastern-zone-latest} b.osm.pbf
-              ${pkgs.osmium-tool}/bin/osmium merge -o ${openStreetDataFileName}.osm.pbf a.osm.pbf b.osm.pbf
+              ln -s ${inputs.india-latest} ${openStreetDataFileName}.osm.pbf
               osrm-extract -p ${pkgs.osrm-backend}/share/osrm/profiles/car.lua ${openStreetDataFileName}.osm.pbf
               osrm-partition ${openStreetDataFileName}.osrm
               osrm-customize ${openStreetDataFileName}.osrm
