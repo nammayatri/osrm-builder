@@ -3,6 +3,8 @@
 let
   openStreetDataFileName = "india-latest";
   carLuaPath = ./car.lua; # Adjust this path as needed
+  speedDataPath = ./speed-data.csv;
+  indiaSpeedDataFileName = "india-latest-speed-data";
 in
 {
   perSystem = { self', pkgs, lib, ... }: {
@@ -12,7 +14,7 @@ in
         osrm-backend = pkgs.osrm-backend.overrideAttrs (oa: {
           # TODO: Use `patches` to directly patch the car.lua file.
           # Or, use a fork of osrm-backend, and point to it.
-          src = pkgs.runCommandNoCC "osrm-backend-patched-src" {} ''
+          src = pkgs.runCommandNoCC "osrm-backend-patched-src" { } ''
             cp -r ${oa.src} $out
             chmod -R u+w $out
             cp ${carLuaPath} $out/profiles/car.lua
@@ -25,9 +27,10 @@ in
             ''
               mkdir $out && cd $out
               ln -s ${inputs.india-latest} ${openStreetDataFileName}.osm.pbf
+              ln -s ${speedDataPath} ${indiaSpeedDataFileName}.csv
               osrm-extract -p ${pkgs.osrm-backend}/share/osrm/profiles/car.lua ${openStreetDataFileName}.osm.pbf
               osrm-partition ${openStreetDataFileName}.osrm
-              osrm-customize ${openStreetDataFileName}.osrm
+              osrm-customize --segment-speed-file ${indiaSpeedDataFileName}.csv ${openStreetDataFileName}.osrm
             '';
 
         osrm-server = pkgs.writeShellApplication {

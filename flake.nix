@@ -5,7 +5,7 @@
     systems.url = "github:nix-systems/default";
 
     # data files
-    india-latest.url = "https://download.geofabrik.de/asia/india-latest.osm.pbf";
+    india-latest.url = "https://download.geofabrik.de/africa/comores-latest.osm.pbf";
     india-latest.flake = false;
   };
 
