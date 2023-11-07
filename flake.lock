@@ -21,13 +21,13 @@
     "india-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-BowLWS0cpLWFVF2/gd1V/erJx4F5Fm8BkqBQGkWB2JY=",
+        "narHash": "sha256-wbNyTjYNasu4XN/e01ABFKxXATC43BsUmMUoLgtKwTU=",
         "type": "file",
-        "url": "https://download.geofabrik.de/asia/india-latest.osm.pbf"
+        "url": "https://download.geofabrik.de/africa/comores-latest.osm.pbf"
       },
       "original": {
         "type": "file",
-        "url": "https://download.geofabrik.de/asia/india-latest.osm.pbf"
+        "url": "https://download.geofabrik.de/africa/comores-latest.osm.pbf"
       }
     },
     "nixpkgs": {

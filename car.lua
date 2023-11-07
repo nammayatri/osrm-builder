@@ -13,9 +13,9 @@ Measure = require("lib/measure")
 function setup()
   return {
     properties = {
-      max_speed_for_map_matching      = 80/3.6, -- 180kmph -> m/s
+      max_speed_for_map_matching      = 54/3.6, -- 180kmph -> m/s
       -- For routing based on duration, but weighted for preferring certain roads
-      weight_name                     = 'routability',
+      weight_name                     = 'duration',
       -- For shortest duration without penalties for accessibility
       -- weight_name                     = 'duration',
       -- For shortest distance without penalties for accessibility
@@ -31,7 +31,7 @@ function setup()
     default_mode              = mode.driving,
     default_speed             = 10,
     oneway_handling           = true,
-    side_road_multiplier      = 0.25,
+    side_road_multiplier      = 0.10,
     turn_penalty              = 0.5,
     speed_reduction           = 0.8,
     turn_bias                 = 1.075,
@@ -87,12 +87,12 @@ function setup()
 
     -- tags disallow access to in combination with highway=service
     service_access_tag_blacklist = Set {
-        'private'
+        -- 'private'
     },
 
     restricted_access_tag_list = Set {
       'private',
-      -- 'delivery',
+      'delivery',
       'destination',
       'customers',
     },
@@ -159,7 +159,7 @@ function setup()
       alley             = 0.3,
       parking           = 0.3,
       parking_aisle     = 0.3,
-      driveway          = 0.3,
+      driveway          = 0,
       ["drive-through"] = 0.3,
       ["drive-thru"] = 0.3
     },
