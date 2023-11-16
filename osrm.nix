@@ -28,14 +28,14 @@ in
               mkdir $out && cd $out
               ln -s ${inputs.india-latest} ${openStreetDataFileName}.osm.pbf
               ln -s ${speedDataPath} ${indiaSpeedDataFileName}.csv
-              osrm-extract -p ${pkgs.osrm-backend}/share/osrm/profiles/car.lua ${openStreetDataFileName}.osm.pbf
+              osrm-extract -p ${self'.packages.osrm-backend}/share/osrm/profiles/car.lua ${openStreetDataFileName}.osm.pbf
               osrm-partition ${openStreetDataFileName}.osrm
               osrm-customize --segment-speed-file ${indiaSpeedDataFileName}.csv ${openStreetDataFileName}.osrm
             '';
 
         osrm-server = pkgs.writeShellApplication {
           name = "osrm-server";
-          runtimeInputs = [ pkgs.osrm-backend ];
+          runtimeInputs = [ self'.packages.osrm-backend ];
           text = ''
             set -x
             osrm-routed --algorithm mld \
