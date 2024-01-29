@@ -8,7 +8,7 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login == 'github-actions[bot]'
+    if: contains(github.event.pull_request.labels.*.name, 'automated')
     steps:
       - uses: peter-evans/enable-pull-request-automerge@v3
         with:
