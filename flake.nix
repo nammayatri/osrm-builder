@@ -1,8 +1,9 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    systems.url = "github:nix-systems/default";
+    common.url = "github:nammayatri/common";
+    nixpkgs.follows = "common/nixpkgs";
+    flake-parts.follows = "common/flake-parts";
+    systems.follows = "common/systems";
 
     # data files
     india-latest.url = "https://download.geofabrik.de/asia/india-latest.osm.pbf";
