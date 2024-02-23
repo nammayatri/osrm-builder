@@ -128,7 +128,7 @@ function setup()
 
     avoid = Set {
       'area',
-      'toll',    -- uncomment this to avoid tolls
+      -- 'toll',    -- uncomment this to avoid tolls
       'reversible',
       'impassable',
       'hov_lanes',
@@ -273,8 +273,10 @@ function setup()
       ["be-bru:rural"] = 70,
       ["be-bru:urban"] = 30,
       ["be-vlg:rural"] = 70,
+      ["bg:motorway"] = 140,
       ["by:urban"] = 60,
       ["by:motorway"] = 110,
+      ["ca-on:rural"] = 80,
       ["ch:rural"] = 80,
       ["ch:trunk"] = 100,
       ["ch:motorway"] = 120,
@@ -284,6 +286,7 @@ function setup()
       ["de:rural"] = 100,
       ["de:motorway"] = 0,
       ["dk:rural"] = 80,
+      ["es:trunk"] = 90,
       ["fr:rural"] = 80,
       ["gb:nsl_single"] = (60*1609)/1000,
       ["gb:nsl_dual"] = (70*1609)/1000,
