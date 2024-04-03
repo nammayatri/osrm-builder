@@ -88,6 +88,7 @@ function setup()
 
     -- tags disallow access to in combination with highway=service
     service_access_tag_blacklist = Set {
+      'military'
         -- 'private'
     },
 
