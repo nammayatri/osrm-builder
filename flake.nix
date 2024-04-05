@@ -6,7 +6,7 @@
     systems.follows = "common/systems";
 
     # data files
-    india-latest.url = "https://download.geofabrik.de/asia/india-latest.osm.pbf";
+    india-latest.url = "https://download.geofabrik.de/north-america/us-midwest-latest.osm.pbf";
     india-latest.flake = false;
   };
 

@@ -346,13 +346,13 @@
     "india-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-SpEtXyRjT/clI+EBALWCmM7oRQThRbKGK5t0k19qf70=",
+        "narHash": "sha256-EGwaZXNmlz6x2/N3wPxxpb9C7+Fuho0N3bjAJbGg7gA=",
         "type": "file",
-        "url": "https://download.geofabrik.de/asia/india-latest.osm.pbf"
+        "url": "https://download.geofabrik.de/north-america/us-midwest-latest.osm.pbf"
       },
       "original": {
         "type": "file",
-        "url": "https://download.geofabrik.de/asia/india-latest.osm.pbf"
+        "url": "https://download.geofabrik.de/north-america/us-midwest-latest.osm.pbf"
       }
     },
     "lowdown-src": {
