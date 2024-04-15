@@ -346,7 +346,7 @@
     "india-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-EGwaZXNmlz6x2/N3wPxxpb9C7+Fuho0N3bjAJbGg7gA=",
+        "narHash": "sha256-oZjS7yXlx4o/1Uvp1buRc9I8TndP7dWKlAkdphqFTJk=",
         "type": "file",
         "url": "https://download.geofabrik.de/north-america/us-midwest-latest.osm.pbf"
       },

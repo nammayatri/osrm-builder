@@ -6,6 +6,7 @@ Set = require('lib/set')
 Sequence = require('lib/sequence')
 Handlers = require("lib/way_handlers")
 Relations = require("lib/relations")
+TrafficSignal = require("lib/traffic_signal")
 find_access_tag = require("lib/access").find_access_tag
 limit = require("lib/maxspeed").limit
 Utils = require("lib/utils")
@@ -14,37 +15,37 @@ Measure = require("lib/measure")
 function setup()
   return {
     properties = {
-      max_speed_for_map_matching      = 54/3.6, -- 180kmph -> m/s
+      max_speed_for_map_matching      = 180/3.6, -- 180kmph -> m/s
       -- For routing based on duration, but weighted for preferring certain roads
-      weight_name                     = 'duration',
+      weight_name                     = 'routability',
       -- For shortest duration without penalties for accessibility
       -- weight_name                     = 'duration',
       -- For shortest distance without penalties for accessibility
       -- weight_name                     = 'distance',
-      process_call_tagless_node      = true,
-      u_turn_penalty                 = 2.5,
-      continue_straight_at_waypoint  = false,
+      process_call_tagless_node      = false,
+      u_turn_penalty                 = 20,
+      continue_straight_at_waypoint  = true,
       use_turn_restrictions          = true,
-      left_hand_driving              = true,
-      traffic_light_penalty          = 0,
+      left_hand_driving              = false,
+      traffic_light_penalty          = 2,
     },
 
     default_mode              = mode.driving,
     default_speed             = 10,
     oneway_handling           = true,
-    side_road_multiplier      = 0.10,
-    turn_penalty              = 0.5,
+    side_road_multiplier      = 0.8,
+    turn_penalty              = 7.5,
     speed_reduction           = 0.8,
     turn_bias                 = 1.075,
     cardinal_directions       = false,
 
     -- Size of the vehicle, to be limited by physical restriction of the way
-    vehicle_height = 1.8, -- in meters, 2.0m is the height slightly above biggest SUVs
-    vehicle_width = 1.6, -- in meters, ways with narrow tag are considered narrower than 2.2m
+    vehicle_height = 2.0, -- in meters, 2.0m is the height slightly above biggest SUVs
+    vehicle_width = 1.9, -- in meters, ways with narrow tag are considered narrower than 2.2m
 
     -- Size of the vehicle, to be limited mostly by legal restriction of the way
-    vehicle_length = 4.5, -- in meters, 4.8m is the length of large or family car
-    vehicle_weight = 1800, -- in kilograms
+    vehicle_length = 4.8, -- in meters, 4.8m is the length of large or family car
+    vehicle_weight = 2000, -- in kilograms
 
     -- a list of suffixes to suppress in name change instructions. The suffixes also include common substrings of each other
     suffix_list = {
@@ -88,8 +89,7 @@ function setup()
 
     -- tags disallow access to in combination with highway=service
     service_access_tag_blacklist = Set {
-      'military'
-        -- 'private'
+        'private'
     },
 
     restricted_access_tag_list = Set {
@@ -140,30 +140,30 @@ function setup()
 
     speeds = Sequence {
       highway = {
-        motorway        = 60,
-        motorway_link   = 30,
-        trunk           = 50,
-        trunk_link      = 30,
-        primary         = 40,
-        primary_link    = 20,
-        secondary       = 40,
-        secondary_link  = 20,
-        tertiary        = 30,
-        tertiary_link   = 10,
-        unclassified    = 20,
-        residential     = 20,
-        living_street   = 5,
-        service         = 10
+        motorway        = 90,
+        motorway_link   = 45,
+        trunk           = 85,
+        trunk_link      = 40,
+        primary         = 65,
+        primary_link    = 30,
+        secondary       = 55,
+        secondary_link  = 25,
+        tertiary        = 40,
+        tertiary_link   = 20,
+        unclassified    = 25,
+        residential     = 25,
+        living_street   = 10,
+        service         = 15
       }
     },
 
     service_penalties = {
-      alley             = 0.3,
-      parking           = 0.3,
-      parking_aisle     = 0.3,
-      driveway          = 0,
-      ["drive-through"] = 0.3,
-      ["drive-thru"] = 0.3
+      alley             = 0.5,
+      parking           = 0.5,
+      parking_aisle     = 0.5,
+      driveway          = 0.5,
+      ["drive-through"] = 0.5,
+      ["drive-thru"] = 0.5
     },
 
     restricted_highway_whitelist = Set {
@@ -209,61 +209,61 @@ function setup()
       ["concrete:lanes"] = nil,
       paved = nil,
 
-      cement = 60,
-      compacted = 60,
-      fine_gravel = 60,
+      cement = 80,
+      compacted = 80,
+      fine_gravel = 80,
 
-      paving_stones = 40,
-      metal = 40,
-      bricks = 40,
+      paving_stones = 60,
+      metal = 60,
+      bricks = 60,
 
-      grass = 30,
-      wood = 30,
-      sett = 30,
-      grass_paver = 30,
-      gravel = 30,
-      unpaved = 30,
-      ground = 30,
-      dirt = 30,
-      pebblestone = 30,
-      tartan = 30,
+      grass = 40,
+      wood = 40,
+      sett = 40,
+      grass_paver = 40,
+      gravel = 40,
+      unpaved = 40,
+      ground = 40,
+      dirt = 40,
+      pebblestone = 40,
+      tartan = 40,
 
-      cobblestone = 20,
-      clay = 20,
+      cobblestone = 30,
+      clay = 30,
 
-      earth = 10,
-      stone = 10,
-      rocky = 10,
-      sand = 10,
+      earth = 20,
+      stone = 20,
+      rocky = 20,
+      sand = 20,
 
-      mud = 5
+      mud = 10
     },
 
     -- max speed for tracktypes
     tracktype_speeds = {
-      grade1 =  40,
-      grade2 =  30,
-      grade3 =  20,
-      grade4 =  15,
-      grade5 =  10
+      grade1 =  60,
+      grade2 =  40,
+      grade3 =  30,
+      grade4 =  25,
+      grade5 =  20
     },
 
     -- max speed for smoothnesses
     smoothness_speeds = {
-      intermediate    =  40,
-      bad             =  20,
-      very_bad        =  10,
-      horrible        =  5,
-      very_horrible   =  2,
+      intermediate    =  80,
+      bad             =  40,
+      very_bad        =  20,
+      horrible        =  10,
+      very_horrible   =  5,
       impassable      =  0
     },
 
     -- http://wiki.openstreetmap.org/wiki/Speed_limits
     maxspeed_table_default = {
-      urban = 40,
-      rural = 30,
-      trunk = 60,
-      motorway = 80
+      urban = 50,
+      rural = 90,
+      trunk = 110,
+      motorway = 130
     },
 
     -- List only exceptions
@@ -296,6 +296,9 @@ function setup()
       ["nl:trunk"] = 100,
       ['no:rural'] = 80,
       ['no:motorway'] = 110,
+      ['ph:urban'] = 40,
+      ['ph:rural'] = 80,
+      ['ph:motorway'] = 100,
       ['pl:rural'] = 100,
       ['pl:trunk'] = 120,
       ['pl:motorway'] = 140,
@@ -364,10 +367,7 @@ function process_node(profile, node, result, relations)
   end
 
   -- check if node is a traffic light
-  local tag = node:get_value_by_key("highway")
-  if "traffic_signals" == tag then
-    result.traffic_lights = true
-  end
+  result.traffic_lights = TrafficSignal.get_value(node)
 end
 
 function process_way(profile, way, result, relations)
