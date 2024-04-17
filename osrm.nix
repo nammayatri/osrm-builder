@@ -38,7 +38,7 @@ in
           runtimeInputs = [ self'.packages.osrm-backend ];
           text = ''
             set -x
-            osrm-routed --algorithm mld \
+            osrm-routed --max-matching-size 1000 --algorithm mld \
                ${osrm-data}/${openStreetDataFileName}.osrm
           '';
         };
