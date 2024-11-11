@@ -1,0 +1,17 @@
+name: "CI"
+on:
+  # Run only when pushing to main branch, and making PRs
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [x86_64-linux]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build all flake outputs
+        run: om ci
