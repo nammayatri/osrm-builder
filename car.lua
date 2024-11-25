@@ -27,6 +27,7 @@ function setup()
       use_turn_restrictions          = true,
       left_hand_driving              = true,
       traffic_light_penalty          = 0,
+      compress                       = false,
     },
 
     default_mode              = mode.driving,
