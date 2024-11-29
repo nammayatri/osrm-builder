@@ -622,6 +622,23 @@
         "type": "github"
       }
     },
+    "osrm-backend": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1731259907,
+        "narHash": "sha256-WD7QvwGaJZRaFCdlrPxMWU6zhkZJIQ7veWdkJrzm65E=",
+        "owner": "nammayatri",
+        "repo": "osrm-backend",
+        "rev": "07851a158536a477082aa546c69d7e1928b7a284",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nammayatri",
+        "ref": "Backend/feat/adding-one-to-one-distance-calculation",
+        "repo": "osrm-backend",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": [
@@ -724,6 +741,7 @@
           "common",
           "nixpkgs"
         ],
+        "osrm-backend": "osrm-backend",
         "systems": [
           "common",
           "systems"
