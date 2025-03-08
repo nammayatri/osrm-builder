@@ -11,7 +11,27 @@ jobs:
     strategy:
       matrix:
         os: [x86_64-linux]
+        system: [x86_64-linux]
     steps:
       - uses: actions/checkout@v4
+      
       - name: Build all flake outputs
         run: om ci
+        
+      - name: Build Docker image
+        run: |
+          nix build .#packages.${{ matrix.system }}.dockerImage
+          
+          BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageName):$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageTag)"
+          echo "BASE_IMAGE=${BASE_IMAGE}" >> $GITHUB_ENV
+          
+          gunzip -c ./result > image.tar || cp ./result image.tar
+      
+      - name: Push Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          DOCKER_REGISTRY: ghcr.io
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ${DOCKER_REGISTRY} -u "${{ github.actor }}" --password-stdin
+          crane push image.tar "${DOCKER_REGISTRY}/${BASE_IMAGE}"
+          crane auth logout ${DOCKER_REGISTRY}
