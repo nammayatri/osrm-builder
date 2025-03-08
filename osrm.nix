@@ -25,19 +25,9 @@ in
             pkgs.lua5_2
           ];
           
-          # Add this patch to fix the C++20 iterator issue
-          patches = [
-            (pkgs.writeText "fix-iter-value-t.patch" ''
-              diff --git a/include/util/static_assert.hpp b/include/util/static_assert.hpp
-              --- a/include/util/static_assert.hpp
-              +++ b/include/util/static_assert.hpp
-              @@ -12,1 +12,1 @@
-              -    static_assert(std::is_same_v<std::iter_value_t<It>, Value>, "");
-              +    static_assert(std::is_same_v<typename std::iterator_traits<It>::value_type, Value>, "");
-            '')
-          ];
-
-          phases = [ "unpackPhase" "patchPhase" "buildPhase" "installPhase" ];
+          # Remove the patch - your code is already correct
+          
+          phases = [ "unpackPhase" "buildPhase" "installPhase" ];
           buildPhase = ''
             mkdir build
             cd build
@@ -63,7 +53,7 @@ in
           '';
         };
 
-        # Modified osrm-data to remove the redundant cp command
+        # Rest of the file remains the same
         osrm-data = pkgs.runCommandNoCC "osrm-data"
           { buildInputs = [ patched-osrm-backend ]; }
           ''
@@ -85,9 +75,6 @@ in
             ${patched-osrm-backend}/bin/osrm-customize \
               --segment-speed-file ${indiaSpeedDataFileName}.csv \
               ${openStreetDataFileName}.osrm
-
-            # Remove redundant copy - files are already in $out
-            # cp ${openStreetDataFileName}.* $out/
           '';
 
         osrm-server = pkgs.writeShellApplication {
