@@ -1,3 +1,4 @@
+# docker.nix
 { self, ... }:
 let
   imageName = "ghcr.io/nammayatri/osrm-builder";
@@ -16,9 +17,8 @@ in
             cacert
             coreutils
             bashInteractive
-            self'.packages.osrm-data
+            self'.packages.patched-osrm-backend
             self'.packages.osrm-server
-            self'.packages.osrm-backend
           ];
           /* pathsToLink = [
               "/bin"
