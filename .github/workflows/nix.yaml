@@ -1,17 +1,59 @@
 name: "CI"
+
 on:
-  # Run only when pushing to main branch, and making PRs
   push:
-    branches:
-      - main
+    branches: 
+      - "main"
   pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: 
+      - "main"
+  workflow_dispatch:
+  
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+  packages: write
+
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [x86_64-linux]
+        system: [x86_64-linux]
+        arch: [amd64]
     steps:
       - uses: actions/checkout@v4
+      
       - name: Build all flake outputs
         run: om ci
+      
+      - name: Build And Push Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          DOCKER_REGISTRY: ghcr.io
+        run: |
+          nix build .#packages.${{ matrix.system }}.dockerImage
+          
+          BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageName):$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageTag)"
+          echo "BASE_IMAGE=${BASE_IMAGE}"
+          
+          mkdir -p /tmp/docker-image
+          
+          echo "Extracting image to /tmp/docker-image/image.tar"
+          gunzip -c ./result > /tmp/docker-image/image.tar || cp ./result /tmp/docker-image/image.tar
+          
+          echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ${DOCKER_REGISTRY} -u "${{ github.actor }}" --password-stdin
+          
+          echo "Pushing image to ${BASE_IMAGE}"
+          crane push /tmp/docker-image/image.tar "${BASE_IMAGE}"
+          
+          rm -rf /tmp/docker-image
+          
+          crane auth logout ${DOCKER_REGISTRY}
+          
+          echo "Push complete"
