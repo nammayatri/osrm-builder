@@ -47,37 +47,6 @@ in
             cp ${carLuaPath} $out/profiles/car.lua
           '';
         };
-
-        osrm-data = pkgs.runCommandNoCC "osrm-data"
-          { buildInputs = [ patched-osrm-backend ]; }
-          ''
-            mkdir -p $out
-            cd $out
-
-            ln -s ${inputs.india-latest} ${openStreetDataFileName}.osm.pbf
-            ln -s ${speedDataPath} ${indiaSpeedDataFileName}.csv
-
-            ${patched-osrm-backend}/bin/osrm-extract \
-              -p ${patched-osrm-backend}/profiles/car.lua \
-              ${openStreetDataFileName}.osm.pbf
-
-            ${patched-osrm-backend}/bin/osrm-partition \
-              ${openStreetDataFileName}.osrm
-
-            ${patched-osrm-backend}/bin/osrm-customize \
-              --segment-speed-file ${indiaSpeedDataFileName}.csv \
-              ${openStreetDataFileName}.osrm
-          '';
-
-        osrm-server = pkgs.writeShellApplication {
-          name = "osrm-server";
-          runtimeInputs = [ patched-osrm-backend ];
-          text = ''
-            set -x
-            osrm-routed --algorithm mld \
-               ${osrm-data}/${openStreetDataFileName}.osrm
-          '';
-        };
       };
   };
 }
