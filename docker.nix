@@ -11,12 +11,11 @@ in
         tag = imageTag;
         created = "now";
         copyToRoot = pkgs.buildEnv {
-          name = "osrm-data";
+          name = "patched-osrm-backend";
           paths = with pkgs; [
             cacert
             coreutils
             bashInteractive
-            self'.packages.patched-osrm-backend
             self'.packages.osrm-server
           ];
           /* pathsToLink = [
