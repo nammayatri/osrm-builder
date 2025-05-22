@@ -16,7 +16,6 @@ in
             cacert
             coreutils
             bashInteractive
-            self'.packages.osrm-server
           ];
           /* pathsToLink = [
               "/bin"
