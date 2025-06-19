@@ -3,27 +3,23 @@
 let
   openStreetDataFileName   = "india-latest";
   carLuaPath               = ./car.lua;
+  footLuaPath              = ./foot.lua;
   speedDataPath            = ./speed-data.csv;
   indiaSpeedDataFileName   = "india-latest-speed-data";
-in
-{
-  perSystem = { self', pkgs, lib, ... }: {
-    packages = rec {
-      # 1) Build your custom OSRM backend via CMake
-      patched-osrm-backend = pkgs.stdenv.mkDerivation {
-        name       = "patched-osrm-backend";
-        src        = inputs.osrm-backend;
-        buildInputs = [
-          pkgs.cmake
-          pkgs.boost
-          pkgs.tbb_2021_8
-          pkgs.expat
-          pkgs.bzip2
-          pkgs.libzip
-          pkgs.pkg-config
-          pkgs.lua5_2
+
+in {
+  perSystem = { self', pkgs, lib, ... }: let
+    mkOsrmBackend = profileName: luaPath:
+      pkgs.stdenv.mkDerivation {
+        name = "patched-osrm-backend-${profileName}";
+        src  = inputs.osrm-backend;
+
+        buildInputs = with pkgs; [
+          cmake boost tbb_2021_8 expat bzip2 libzip pkg-config lua5_2
         ];
+
         phases = [ "unpackPhase" "buildPhase" "installPhase" ];
+
         buildPhase = ''
           mkdir build && cd build
           cmake .. \
@@ -36,41 +32,52 @@ in
             -DCMAKE_INSTALL_PREFIX=$out
           make
         '';
+
         installPhase = ''
           mkdir -p $out/bin $out/profiles
           cp osrm-* $out/bin/
-          cp -r ../profiles/* $out/profiles/
-          cp ${carLuaPath} $out/profiles/car.lua
+          cp -r ../profiles/* $out/profiles/ || true
+          cp ${luaPath} $out/profiles/${profileName}.lua
         '';
       };
 
-      # 2) Generate .osrm.* data under /opt/osrm-data
-      osrm-data = pkgs.runCommandNoCC "osrm-data" {
-        buildInputs = [ patched-osrm-backend ];
+    mkOsrmData = profileName: luaPath: backendDrv:
+      pkgs.runCommandNoCC "osrm-data-${profileName}" {
+        buildInputs = [ backendDrv ];
       } ''
-        # create the same path your k8s command uses
         mkdir -p $out/opt/osrm-data
         cd $out/opt/osrm-data
 
         ln -s ${inputs.india-latest}                   ${openStreetDataFileName}.osm.pbf
         ln -s ${speedDataPath}                         ${indiaSpeedDataFileName}.csv
 
-        ${patched-osrm-backend}/bin/osrm-extract -p ${patched-osrm-backend}/profiles/car.lua ${openStreetDataFileName}.osm.pbf
+        ${backendDrv}/bin/osrm-extract -p ${backendDrv}/profiles/${profileName}.lua ${openStreetDataFileName}.osm.pbf
 
-        ${patched-osrm-backend}/bin/osrm-partition ${openStreetDataFileName}.osrm
+        ${backendDrv}/bin/osrm-partition ${openStreetDataFileName}.osrm
 
-        ${patched-osrm-backend}/bin/osrm-customize --segment-speed-file ${indiaSpeedDataFileName}.csv ${openStreetDataFileName}.osrm
+        ${backendDrv}/bin/osrm-customize --segment-speed-file ${indiaSpeedDataFileName}.csv ${openStreetDataFileName}.osrm
       '';
 
-      # 3) Wrapper pointing at the /opt directory
-      osrm-server = pkgs.writeShellApplication {
-        name          = "osrm-server";
-        runtimeInputs = [ patched-osrm-backend ];
+    mkOsrmServer = profileName: backendDrv:
+      pkgs.writeShellApplication {
+        name = "osrm-server-${profileName}";
+        runtimeInputs = [ backendDrv ];
         text = ''
           set -x
           osrm-routed --algorithm mld /opt/osrm-data/${openStreetDataFileName}.osrm
         '';
       };
+  in {
+    packages = rec {
+      # Car profile
+      patched-osrm-backend-car = mkOsrmBackend "car" carLuaPath;
+      osrm-data-car            = mkOsrmData "car" carLuaPath patched-osrm-backend-car;
+      osrm-server-car          = mkOsrmServer "car" patched-osrm-backend-car;
+
+      # Foot profile
+      patched-osrm-backend-foot = mkOsrmBackend "foot" footLuaPath;
+      osrm-data-foot            = mkOsrmData "foot" footLuaPath patched-osrm-backend-foot;
+      osrm-server-foot          = mkOsrmServer "foot" patched-osrm-backend-foot;
     };
   };
 }
