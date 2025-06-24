@@ -35,24 +35,30 @@ jobs:
       - name: Build And Push Docker image
         env:
           DOCKER_REGISTRY: ghcr.io
+          SYSTEM: ${{ matrix.system }}
         run: |
-          nix build .#packages.${{ matrix.system }}.dockerImage
-          
-          BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageName):$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageTag)"
-          echo "BASE_IMAGE=${BASE_IMAGE}"
-          
-          mkdir -p /tmp/docker-image
-          
-          echo "Extracting image to /tmp/docker-image/image.tar"
-          gunzip -c ./result > /tmp/docker-image/image.tar || cp ./result /tmp/docker-image/image.tar
-          
-          echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ${DOCKER_REGISTRY} -u "${{ github.actor }}" --password-stdin
-          
-          echo "Pushing image to ${BASE_IMAGE}"
-          crane push /tmp/docker-image/image.tar "${BASE_IMAGE}"
-          
-          rm -rf /tmp/docker-image
-          
-          crane auth logout ${DOCKER_REGISTRY}
-          
-          echo "Push complete"
+         for PROFILE in car foot; do
+            echo "Building dockerImage-${PROFILE}..."
+
+            IMAGE_PATH=$(nix build ".#packages.${SYSTEM}.dockerImage-${PROFILE}" --no-link --print-out-paths)
+
+            IMAGE_NAME=$(nix eval --raw ".#packages.${SYSTEM}.dockerImage-${PROFILE}.imageName")
+            IMAGE_TAG=$(nix eval --raw ".#packages.${SYSTEM}.dockerImage-${PROFILE}.imageTag")
+            FULL_IMAGE="${IMAGE_NAME}:${IMAGE_TAG}"
+
+            echo "Image: ${FULL_IMAGE}"
+
+            mkdir -p /tmp/docker-image-${PROFILE}
+            echo "Extracting image to /tmp/docker-image/image.tar"
+            gunzip -c "$IMAGE_PATH" > /tmp/docker-image-${PROFILE}/image.tar || cp "$IMAGE_PATH" /tmp/docker-image-${PROFILE}/image.tar
+
+            echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login "${DOCKER_REGISTRY}" -u "${{ github.actor }}" --password-stdin
+
+            echo "Pushing ${FULL_IMAGE}..."
+            crane push /tmp/docker-image-${PROFILE}/image.tar "${FULL_IMAGE}"
+
+            rm -rf /tmp/docker-image-${PROFILE}
+            crane auth logout "${DOCKER_REGISTRY}"
+
+            echo "Done pushing ${FULL_IMAGE}"
+          done
