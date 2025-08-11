@@ -17,10 +17,9 @@ permissions:
   packages: write
 
 jobs:
-  # Cleanup job runs on GitHub's ubuntu runner (has Docker)
   cleanup:
     runs-on: ubuntu-latest
-    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Cleanup old container images
         uses: snok/container-retention-policy@v3.0.0
@@ -29,13 +28,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           image-names: ${{ github.event.repository.name }}
           cut-off: 1m
-          keep-n-most-recent: 1
-          dry-run: true  # Change to false after testing
+          keep-n-most-recent: 2
+          dry-run: false
 
-  # Build job runs on your custom runner (has Nix)
   build:
     runs-on: ${{ matrix.os }}
-    needs: cleanup  # Wait for cleanup to finish first
+    needs: cleanup
+    if: always()
     strategy:
       matrix:
         os: [x86_64-linux]
