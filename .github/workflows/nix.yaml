@@ -9,7 +9,6 @@ on:
     branches: 
       - "main"
   workflow_dispatch:
-  
 
 permissions:
   contents: write
@@ -17,10 +16,25 @@ permissions:
   issues: read
   packages: write
 
-
 jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Cleanup old container images
+        uses: snok/container-retention-policy@v3.0.0
+        with:
+          account: ${{ github.repository_owner }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image-names: ${{ github.event.repository.name }}
+          cut-off: 1m
+          keep-n-most-recent: 2
+          dry-run: false
+
   build:
     runs-on: ${{ matrix.os }}
+    needs: cleanup
+    if: always()
     strategy:
       matrix:
         os: [x86_64-linux]
