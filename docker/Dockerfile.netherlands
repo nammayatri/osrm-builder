@@ -1,0 +1,23 @@
+FROM ubuntu:22.04 AS downloader
+
+RUN apt-get update && apt-get install -y wget
+
+# Download Netherlands PBF
+RUN wget -O /netherlands-latest.osm.pbf \
+    https://download.geofabrik.de/europe/netherlands-latest.osm.pbf
+
+FROM osrm/osrm-backend AS builder
+
+COPY --from=downloader /netherlands-latest.osm.pbf /data/map.osm.pbf
+
+RUN osrm-extract -p /opt/car.lua /data/map.osm.pbf && \
+    osrm-partition /data/map.osrm && \
+    osrm-customize /data/map.osrm
+
+FROM osrm/osrm-backend
+
+COPY --from=builder /data/*.osrm* /data/
+
+EXPOSE 5000
+
+CMD ["osrm-routed", "--algorithm", "mld", "/data/map.osrm"]
