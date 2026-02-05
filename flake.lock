@@ -346,7 +346,7 @@
     "india-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-ILNqErEgoovMbhY4D1U4Oxvi41Tye2HXH80Pmg+Sg2k=",
+        "narHash": "sha256-rL8HT2hnOqvI2W6eMTeCu3qSesffuu2LWeBGyu5tstE=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india-latest.osm.pbf"
       },
