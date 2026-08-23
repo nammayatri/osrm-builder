@@ -28,7 +28,10 @@ jobs:
         arch: [amd64]
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Use latest India OSM data
+        run: nix flake lock --update-input india-latest
+
       - name: Build all flake outputs
         run: om ci
       
