@@ -42,7 +42,10 @@ jobs:
         run: |
           nix build .#packages.${{ matrix.system }}.dockerImage
           
-          BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageName):$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageTag)"
+          # Tag by the commit SHA, not the flake's imageTag: the india-latest
+          # re-lock step above dirties the git tree, so self.rev is unset and
+          # imageTag falls back to "dev". GITHUB_SHA is the commit being built.
+          BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageName):${GITHUB_SHA::6}"
           echo "BASE_IMAGE=${BASE_IMAGE}"
           
           mkdir -p /tmp/docker-image
