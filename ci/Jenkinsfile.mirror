@@ -1,0 +1,101 @@
+// Mirror the osrm-builder image from ghcr to GCP Artifact Registry (ny-prod).
+// Triggered by the GitHub Actions "CI" workflow after it pushes to ghcr
+// (see .github/workflows/nix.yaml -> "Trigger Jenkins image mirror").
+//
+// Jenkins setup (one-time):
+//   - Pipeline job named "osrm-image-mirror", "Pipeline script from SCM" -> ci/Jenkinsfile.mirror
+//   - Mark it parameterized with a String parameter IMAGE_TAG (the trigger also passes it)
+//   - Credentials:
+//       ghcr-read      (Username+password) : GitHub user + PAT with read:packages (package is private)
+//       gcp-sa-key-prod (Secret file)      : GCP SA JSON with roles/artifactregistry.writer on ny-prod
+pipeline {
+  agent { label 'linux' }   // agent needs: curl, gcloud (crane is installed below)
+
+  parameters {
+    string(name: 'IMAGE_TAG', defaultValue: '', description: '6-char commit SHA tag to mirror, e.g. 779a2b')
+  }
+
+  options {
+    timeout(time: 60, unit: 'MINUTES')
+    disableConcurrentBuilds()
+    ansiColor('xterm')
+  }
+
+  environment {
+    SRC           = "ghcr.io/nammayatri/osrm-builder"
+    AR            = "asia-south1-docker.pkg.dev/ny-prod/beckn-osrm/beckn-osrm"
+    CRANE_VER     = "v0.20.2"
+    DOCKER_CONFIG = "${WORKSPACE}/.docker"   // isolate registry auth per-build
+    PATH          = "${WORKSPACE}/bin:${PATH}"
+  }
+
+  stages {
+    stage('Validate') {
+      steps {
+        script { if (!params.IMAGE_TAG?.trim()) { error "IMAGE_TAG is required (e.g. 779a2b)" } }
+      }
+    }
+
+    stage('Install crane') {
+      steps {
+        sh '''
+          set -eu
+          mkdir -p "$WORKSPACE/bin" "$DOCKER_CONFIG"
+          if ! command -v crane >/dev/null 2>&1; then
+            os=$(uname -s); arch=$(uname -m)
+            [ "$arch" = "aarch64" ] && arch=arm64; [ "$arch" = "x86_64" ] && arch=x86_64
+            curl -sSL "https://github.com/google/go-containerregistry/releases/download/${CRANE_VER}/go-containerregistry_${os}_${arch}.tar.gz" \
+              | tar -xz -C "$WORKSPACE/bin" crane
+          fi
+          crane version
+        '''
+      }
+    }
+
+    stage('Auth: ghcr (source)') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'ghcr-read',
+                         usernameVariable: 'GHCR_USER', passwordVariable: 'GHCR_TOKEN')]) {
+          sh '''
+            set -eu
+            echo "$GHCR_TOKEN" | crane auth login ghcr.io -u "$GHCR_USER" --password-stdin
+            crane manifest "$SRC:$IMAGE_TAG" >/dev/null && echo "source $SRC:$IMAGE_TAG exists"
+          '''
+        }
+      }
+    }
+
+    stage('Mirror -> GCP Artifact Registry') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-sa-key-prod', variable: 'GCP_KEY_FILE_PROD')]) {
+          sh '''
+            set -eu
+            gcloud auth activate-service-account --key-file="$GCP_KEY_FILE_PROD" --quiet
+            gcloud auth print-access-token \
+              | crane auth login asia-south1-docker.pkg.dev -u oauth2accesstoken --password-stdin
+            echo "copying $SRC:$IMAGE_TAG -> $AR:$IMAGE_TAG"
+            crane copy "$SRC:$IMAGE_TAG" "$AR:$IMAGE_TAG"
+          '''
+        }
+      }
+    }
+
+    stage('Verify digests match') {
+      steps {
+        sh '''
+          set -eu
+          SRC_D=$(crane digest "$SRC:$IMAGE_TAG")
+          AR_D=$(crane digest "$AR:$IMAGE_TAG")
+          echo "source : $SRC_D"
+          echo "AR     : $AR_D"
+          [ "$AR_D" = "$SRC_D" ] || { echo "AR digest mismatch"; exit 1; }
+          echo "AR matches source digest."
+        '''
+      }
+    }
+  }
+
+  post {
+    always { sh 'rm -rf "$DOCKER_CONFIG" || true; gcloud auth revoke --all --quiet || true' }
+  }
+}

@@ -61,5 +61,23 @@ jobs:
           rm -rf /tmp/docker-image
           
           crane auth logout ${DOCKER_REGISTRY}
-          
+
           echo "Push complete"
+
+      # After the image is pushed to ghcr, trigger the Jenkins job that mirrors
+      # it to Artifact Registry. Passes the same commit-SHA tag that was pushed.
+      - name: Trigger Jenkins image mirror
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+          JENKINS_JOB: osrm-image-mirror
+        run: |
+          TAG="${GITHUB_SHA::6}"
+          echo "Triggering Jenkins job '${JENKINS_JOB}' to mirror tag ${TAG}"
+          # API-token auth bypasses CSRF for the REST API; -f fails the step on non-2xx.
+          curl -fsSL -X POST \
+            -u "${JENKINS_USER}:${JENKINS_TOKEN}" \
+            "${JENKINS_URL}/job/${JENKINS_JOB}/buildWithParameters?IMAGE_TAG=${TAG}"
+          echo "Jenkins mirror triggered."
