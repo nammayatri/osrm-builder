@@ -40,26 +40,29 @@ jobs:
         env:
           DOCKER_REGISTRY: ghcr.io
         run: |
-          nix build .#packages.${{ matrix.system }}.dockerImage
-          
-          # Tag by the commit SHA, not the flake's imageTag: the india-latest
-          # re-lock step above dirties the git tree, so self.rev is unset and
-          # imageTag falls back to "dev". GITHUB_SHA is the commit being built.
-          BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.dockerImage.imageName):${GITHUB_SHA::6}"
-          echo "BASE_IMAGE=${BASE_IMAGE}"
-          
-          mkdir -p /tmp/docker-image
-          
-          echo "Extracting image to /tmp/docker-image/image.tar"
-          gunzip -c ./result > /tmp/docker-image/image.tar || cp ./result /tmp/docker-image/image.tar
-          
           echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ${DOCKER_REGISTRY} -u "${{ github.actor }}" --password-stdin
-          
-          echo "Pushing image to ${BASE_IMAGE}"
-          crane push /tmp/docker-image/image.tar "${BASE_IMAGE}"
-          
-          rm -rf /tmp/docker-image
-          
+
+          # dockerImage = car routing (beckn-osrm), dockerImageFoot = walking routing
+          for pkg in dockerImage dockerImageFoot; do
+            nix build .#packages.${{ matrix.system }}.${pkg}
+
+            # Tag by the commit SHA, not the flake's imageTag: the india-latest
+            # re-lock step above dirties the git tree, so self.rev is unset and
+            # imageTag falls back to "dev". GITHUB_SHA is the commit being built.
+            BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.${pkg}.imageName):${GITHUB_SHA::6}"
+            echo "BASE_IMAGE=${BASE_IMAGE}"
+
+            mkdir -p /tmp/docker-image
+
+            echo "Extracting image to /tmp/docker-image/image.tar"
+            gunzip -c ./result > /tmp/docker-image/image.tar || cp ./result /tmp/docker-image/image.tar
+
+            echo "Pushing image to ${BASE_IMAGE}"
+            crane push /tmp/docker-image/image.tar "${BASE_IMAGE}"
+
+            rm -rf /tmp/docker-image ./result
+          done
+
           crane auth logout ${DOCKER_REGISTRY}
-          
+
           echo "Push complete"
