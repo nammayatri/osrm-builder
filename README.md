@@ -16,13 +16,13 @@ Commit the changes to the `flake.lock` file.
 
 ## Walking (foot) profile
 
-OSRM fixes the routing profile when the data is extracted; the `driving`/`foot` segment of a request URL is ignored. The car image (`dockerImage`) therefore answers `/route/v1/foot/...` with a **car** route. Walking routes come from a separate image built from the same `india-latest` map with the stock `foot.lua`:
+OSRM fixes the routing profile when the data is extracted; the `driving`/`foot` segment of a request URL is ignored. The car image (`dockerImage`) therefore answers `/route/v1/foot/...` with a **car** route. Walking routes come from a second image (same name, `-foot` tag) built from the same `india-latest` map with the stock `foot.lua`:
 
 ```sh
 docker load -i $(nix build .#dockerImageFoot --no-link --print-out-paths)
 ```
 
-It is pushed as `ghcr.io/nammayatri/osrm-builder-foot:<sha>` and runs with the same command as the car image (`osrm-server`, data at `/opt/osrm-data/india-latest.osrm`), so it deploys as its own service, e.g. with `/(route|table|match|nearest|trip)/v1/foot/` routed to it. `speed-data.csv` is not applied to it (those are car speeds).
+It is pushed under the same name with a `-foot` tag, `ghcr.io/nammayatri/osrm-builder:<sha>-foot` (car stays `:<sha>`), and runs with the same command as the car image (`osrm-server`, data at `/opt/osrm-data/india-latest.osrm`), so it deploys as its own service, e.g. with `/(route|table|match|nearest|trip)/v1/foot/` routed to it. `speed-data.csv` is not applied to it (those are car speeds).
 
 ## Auto update in CI
 

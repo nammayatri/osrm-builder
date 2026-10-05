@@ -42,14 +42,18 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ${DOCKER_REGISTRY} -u "${{ github.actor }}" --password-stdin
 
-          # dockerImage = car routing (beckn-osrm), dockerImageFoot = walking routing
-          for pkg in dockerImage dockerImageFoot; do
+          # <package>:<tag suffix> -- one image name, walking told apart by tag:
+          #   dockerImage     -> osrm-builder:<sha>       (car, beckn-osrm)
+          #   dockerImageFoot -> osrm-builder:<sha>-foot  (walking)
+          for spec in "dockerImage:" "dockerImageFoot:-foot"; do
+            pkg="${spec%%:*}"
+            suffix="${spec#*:}"
             nix build .#packages.${{ matrix.system }}.${pkg}
 
             # Tag by the commit SHA, not the flake's imageTag: the india-latest
             # re-lock step above dirties the git tree, so self.rev is unset and
             # imageTag falls back to "dev". GITHUB_SHA is the commit being built.
-            BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.${pkg}.imageName):${GITHUB_SHA::6}"
+            BASE_IMAGE="$(nix eval --raw .#packages.${{ matrix.system }}.${pkg}.imageName):${GITHUB_SHA::6}${suffix}"
             echo "BASE_IMAGE=${BASE_IMAGE}"
 
             mkdir -p /tmp/docker-image
