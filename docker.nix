@@ -1,15 +1,16 @@
 { self, ... }:
 let
-  imageName     = "ghcr.io/nammayatri/osrm-builder";
-  footImageName = "ghcr.io/nammayatri/osrm-builder-foot";
-  imageTag      = builtins.substring 0 6 (self.rev or "dev");
+  imageName = "ghcr.io/nammayatri/osrm-builder";
+  imageTag  = builtins.substring 0 6 (self.rev or "dev");
 in
 {
   perSystem = { self', pkgs, lib, ... }:
     let
-      mkImage = name: data: pkgs.dockerTools.buildImage {
-        inherit name;
-        tag     = imageTag;
+      # Both images share one name; the walking one is told apart by a tag
+      # suffix (<sha>-foot), which CI mirrors when it pushes.
+      mkImage = tagSuffix: data: pkgs.dockerTools.buildImage {
+        name    = imageName;
+        tag     = imageTag + tagSuffix;
         created = "now";
 
         # pull in everything under / via buildEnv
@@ -29,10 +30,10 @@ in
     {
       packages = {
         # Car routing (what beckn-osrm runs today)
-        dockerImage = mkImage imageName self'.packages.osrm-data;
+        dockerImage = mkImage "" self'.packages.osrm-data;
 
         # Walking routing; same server command, foot-profile data
-        dockerImageFoot = mkImage footImageName self'.packages.osrm-data-foot;
+        dockerImageFoot = mkImage "-foot" self'.packages.osrm-data-foot;
       };
     };
 }
