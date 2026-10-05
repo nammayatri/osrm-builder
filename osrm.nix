@@ -62,6 +62,27 @@ in
         ${patched-osrm-backend}/bin/osrm-customize --segment-speed-file ${indiaSpeedDataFileName}.csv ${openStreetDataFileName}.osrm
       '';
 
+      # 2b) Same map, walking profile (stock foot.lua from the patched backend).
+      # OSRM fixes the profile at extract time and ignores the profile segment
+      # of the request URL, so walking routes need a dataset of their own.
+      # No --segment-speed-file: speed-data.csv holds car segment speeds.
+      # Lives at the same /opt/osrm-data path as the car data so the foot image
+      # runs with an identical command; the two are never in one image.
+      osrm-data-foot = pkgs.runCommandNoCC "osrm-data-foot" {
+        buildInputs = [ patched-osrm-backend ];
+      } ''
+        mkdir -p $out/opt/osrm-data
+        cd $out/opt/osrm-data
+
+        ln -s ${inputs.india-latest}                   ${openStreetDataFileName}.osm.pbf
+
+        ${patched-osrm-backend}/bin/osrm-extract -p ${patched-osrm-backend}/profiles/foot.lua ${openStreetDataFileName}.osm.pbf
+
+        ${patched-osrm-backend}/bin/osrm-partition ${openStreetDataFileName}.osrm
+
+        ${patched-osrm-backend}/bin/osrm-customize ${openStreetDataFileName}.osrm
+      '';
+
       # 3) Wrapper pointing at the /opt directory
       osrm-server = pkgs.writeShellApplication {
         name          = "osrm-server";
