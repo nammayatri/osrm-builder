@@ -6,14 +6,13 @@ in
 {
   perSystem = { self', pkgs, lib, ... }:
     let
-      # Both images share one name; the walking one is told apart by a tag
-      # suffix (<sha>-foot), which CI mirrors when it pushes.
-      mkImage = tagSuffix: data: pkgs.dockerTools.buildImage {
+      # All images share one name and are told apart by a tag suffix
+      # (<sha>-foot, <sha>-eu, <sha>-eu-foot, <sha>-india-eu), which CI mirrors when it pushes.
+      mkImage = tagSuffix: server: data: pkgs.dockerTools.buildImage {
         name    = imageName;
         tag     = imageTag + tagSuffix;
         created = "now";
 
-        # pull in everything under / via buildEnv
         copyToRoot = pkgs.buildEnv {
           name = "osrm-data";
           paths = with pkgs; [
@@ -21,19 +20,19 @@ in
             coreutils
             bashInteractive
             self'.packages.patched-osrm-backend
-            self'.packages.osrm-server
+            server
             data
           ];
         };
       };
     in
     {
-      packages = {
-        # Car routing (what beckn-osrm runs today)
-        dockerImage = mkImage "" self'.packages.osrm-data;
-
-        # Walking routing; same server command, foot-profile data
-        dockerImageFoot = mkImage "-foot" self'.packages.osrm-data-foot;
+      packages = with self'.packages; {
+        dockerImage        = mkImage ""          osrm-server              osrm-data;
+        dockerImageFoot    = mkImage "-foot"     osrm-server              osrm-data-foot;
+        dockerImageEu      = mkImage "-eu"       osrm-server-europe       osrm-data-europe;
+        dockerImageEuFoot  = mkImage "-eu-foot"  osrm-server-europe       osrm-data-europe-foot;
+        dockerImageIndiaEu = mkImage "-india-eu" osrm-server-india-europe osrm-data-india-europe;
       };
     };
 }
