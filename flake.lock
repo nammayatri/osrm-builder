@@ -136,6 +136,18 @@
         "type": "github"
       }
     },
+    "finland-latest": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-MeSDkICE/8sxAIQl/ObVFEYBt7kEK0qaIrWArFMzlkI=",
+        "type": "file",
+        "url": "https://download.geofabrik.de/europe/finland-latest.osm.pbf"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://download.geofabrik.de/europe/finland-latest.osm.pbf"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -346,7 +358,7 @@
     "india-latest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-apaesIN42z6tw6wFL0GOsr1kPVnLw5wZyWFlmHQa03Y=",
+        "narHash": "sha256-FEpMFV81s6Z0vbqcgbNzrFDtxa7G2wQ6Fy2v2p91WrA=",
         "type": "file",
         "url": "https://download.geofabrik.de/asia/india-latest.osm.pbf"
       },
@@ -384,6 +396,18 @@
         "owner": "Platonic-Systems",
         "repo": "mission-control",
         "type": "github"
+      }
+    },
+    "netherlands-latest": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-n5an7Bc3Rk0+U0F/9h6IqvahruZT5b+tf4l4lXoWVhM=",
+        "type": "file",
+        "url": "https://download.geofabrik.de/europe/netherlands-latest.osm.pbf"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://download.geofabrik.de/europe/netherlands-latest.osm.pbf"
       }
     },
     "nix": {
@@ -732,11 +756,13 @@
     "root": {
       "inputs": {
         "common": "common",
+        "finland-latest": "finland-latest",
         "flake-parts": [
           "common",
           "flake-parts"
         ],
         "india-latest": "india-latest",
+        "netherlands-latest": "netherlands-latest",
         "nixpkgs": [
           "common",
           "nixpkgs"
