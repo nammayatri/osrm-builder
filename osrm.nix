@@ -23,6 +23,12 @@ in
           ${backend}/bin/osrm-customize ${lib.optionalString (speedData != null) "--segment-speed-file ${speedData}"} ${dataName}.osrm
         '';
 
+      mergePbf = name: pbfs: pkgs.runCommandNoCC name {
+        buildInputs = [ pkgs.osmium-tool ];
+      } ''
+        osmium merge ${lib.concatStringsSep " " (map toString pbfs)} -o $out -f pbf
+      '';
+
       mkOsrmServer = dataName: pkgs.writeShellApplication {
         name          = "osrm-server";
         runtimeInputs = [ backend ];
@@ -68,11 +74,16 @@ in
           '';
         };
 
-        india-europe-pbf = pkgs.runCommandNoCC "india-europe-latest.osm.pbf" {
-          buildInputs = [ pkgs.osmium-tool ];
-        } ''
-          osmium merge ${inputs.india-latest} ${inputs.europe-latest} -o $out -f pbf
-        '';
+        europe-pbf = mergePbf "europe-latest.osm.pbf" [
+          inputs.finland-latest
+          inputs.netherlands-latest
+        ];
+
+        india-europe-pbf = mergePbf "india-europe-latest.osm.pbf" [
+          inputs.india-latest
+          inputs.finland-latest
+          inputs.netherlands-latest
+        ];
 
         osrm-data = mkOsrmData {
           name      = "osrm-data";
@@ -96,14 +107,14 @@ in
         osrm-data-europe = mkOsrmData {
           name     = "osrm-data-europe";
           dataName = "europe-latest";
-          pbf      = inputs.europe-latest;
+          pbf      = europe-pbf;
           profile  = "car";
         };
 
         osrm-data-europe-foot = mkOsrmData {
           name     = "osrm-data-europe-foot";
           dataName = "europe-latest";
-          pbf      = inputs.europe-latest;
+          pbf      = europe-pbf;
           profile  = "foot";
         };
 

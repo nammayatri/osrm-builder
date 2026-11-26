@@ -8,8 +8,10 @@
     # data files
     india-latest.url = "https://download.geofabrik.de/asia/india-latest.osm.pbf";
     india-latest.flake = false;
-    europe-latest.url = "https://download.geofabrik.de/europe-latest.osm.pbf";
-    europe-latest.flake = false;
+    finland-latest.url = "https://download.geofabrik.de/europe/finland-latest.osm.pbf";
+    finland-latest.flake = false;
+    netherlands-latest.url = "https://download.geofabrik.de/europe/netherlands-latest.osm.pbf";
+    netherlands-latest.flake = false;
 
     osrm-backend = {
       url = "github:nammayatri/osrm-backend/Backend/feat/adding-one-to-one-distance-calculation";

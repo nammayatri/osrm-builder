@@ -29,8 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use latest India and Europe OSM data
-        run: nix flake lock --update-input india-latest --update-input europe-latest
+      - name: Use latest India, Finland and Netherlands OSM data
+        run: nix flake lock --update-input india-latest --update-input finland-latest --update-input netherlands-latest
 
       - name: Build all flake outputs
         run: om ci
@@ -45,9 +45,9 @@ jobs:
           # <package>:<tag suffix> -- one image name, variants told apart by tag:
           #   dockerImage        -> osrm-builder:<sha>           (india car, beckn-osrm)
           #   dockerImageFoot    -> osrm-builder:<sha>-foot      (india walking)
-          #   dockerImageEu      -> osrm-builder:<sha>-eu        (europe car)
-          #   dockerImageEuFoot  -> osrm-builder:<sha>-eu-foot   (europe walking)
-          #   dockerImageIndiaEu -> osrm-builder:<sha>-india-eu  (india + europe car)
+          #   dockerImageEu      -> osrm-builder:<sha>-eu        (finland + netherlands car)
+          #   dockerImageEuFoot  -> osrm-builder:<sha>-eu-foot   (finland + netherlands walking)
+          #   dockerImageIndiaEu -> osrm-builder:<sha>-india-eu  (india + finland + netherlands car)
           for spec in "dockerImage:" "dockerImageFoot:-foot" "dockerImageEu:-eu" "dockerImageEuFoot:-eu-foot" "dockerImageIndiaEu:-india-eu"; do
             pkg="${spec%%:*}"
             suffix="${spec#*:}"
