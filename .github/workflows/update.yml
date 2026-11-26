@@ -20,4 +20,4 @@ jobs:
           pr-labels: |                  # Labels to be set on the PR
             dependencies
             automated
-          inputs: india-latest
+          inputs: india-latest europe-latest
