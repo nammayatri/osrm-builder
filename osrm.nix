@@ -26,7 +26,7 @@ in
       mergePbf = name: pbfs: pkgs.runCommandNoCC name {
         buildInputs = [ pkgs.osmium-tool ];
       } ''
-        osmium merge ${lib.concatStringsSep " " (map toString pbfs)} -o $out -f pbf
+        osmium merge -F pbf ${lib.concatStringsSep " " (map toString pbfs)} -o $out -f pbf
       '';
 
       mkOsrmServer = dataName: pkgs.writeShellApplication {
